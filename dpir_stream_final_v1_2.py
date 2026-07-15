@@ -474,7 +474,7 @@ def main() -> None:
         "-preset", "slow",
         "-crf", str(x265_crf),
         "-profile:v", "main10",
-        "-x265-params", "aq-mode=3",
+        "-x265-params", "aq-mode=3:log-level=error",
     ]
     encoder_pixel_format = "yuv420p10le"
 
@@ -671,10 +671,11 @@ def main() -> None:
             if isinstance(item, BaseException):
                 raise item
 
-            frame = np.frombuffer(
-                item,
-                dtype="<u2",
-            ).reshape(height, width, 3)
+            frame = (
+                np.frombuffer(item, dtype="<u2")
+                .reshape(height, width, 3)
+                .copy()
+            )
 
             enhanced = process_frame(frame)
 
